@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>排行榜 — 无缝平移轮播（修复版）</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排行榜展示（最终平移版）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <style>
   body {
     margin: 0;
     height: 100vh;
+    background: linear-gradient(135deg, #FFEFEF, #E8FFF8);
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background 1s ease;
-    background: linear-gradient(135deg,#FFEFEF,#E8FFF8);
+    transition: background 2s ease;
   }
 
   .scene {
@@ -23,65 +23,111 @@
     height: 600px;
     position: relative;
     overflow: hidden;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
   }
 
-  .slides {
-    display:flex;
-    height:100%;
-    transition: transform 900ms ease;
-    will-change: transform;
-  }
-
-  .slide {
-    flex: 0 0 100%;
-    height:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+  .carousel {
+    display: flex;
+    transition: transform 1s ease-in-out;
   }
 
   .card {
-    width: 90%;
-    height: 85%;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.92);
-    padding: 1rem;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
-    overflow:auto;
-    text-align:center;
+    flex: 0 0 900px;
+    height: 600px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  h2 { font-size:1.7rem; margin-bottom:0.8rem; font-weight:600; }
+  .card-content {
+    width: 90%;
+    height: 85%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    overflow: auto;
+  }
 
-  table { width:100%; border-collapse:collapse; font-size:1.1rem; }
-  th,td { padding:0.55rem; border-bottom:1px solid #e6e6e6; }
-  tr:nth-child(even){ background: rgba(0,0,0,0.03); }
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
 
-  .nav-zone { position:absolute; top:0; width:50%; height:100%; z-index:8; cursor:pointer; }
-  .nav-left{ left:0; } .nav-right{ right:0; }
+  table {
+    width: 100%;
+    font-size: 1.2rem;
+    border-collapse: collapse;
+  }
 
-  img.logo { position:absolute; top:14px; left:50%; transform:translateX(-50%); width:140px; z-index:9; }
+  th, td {
+    padding: 0.6rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
 
-  @media(max-width:800px){
-    .scene{ width:100vw; height:80vh; border-radius:0; }
-    h2{ font-size:1.3rem; }
-    table{ font-size:0.95rem; }
+  th {
+    background-color: rgba(255,255,255,0.6);
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255,255,255,0.4);
+  }
+
+  img.logo {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+  }
+
+  /* 点击区域（隐藏但可点击） */
+  .left-zone, .right-zone {
+    position: fixed;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 10;
+  }
+  .left-zone { left: 0; }
+  .right-zone { right: 0; }
+
+  @media(max-width: 800px){
+    .scene { width: 100vw; height: 80vh; }
+    .card { flex: 0 0 100vw; height: 80vh; }
+    h2 { font-size: 1.4rem; }
+    table { font-size: 1rem; }
   }
 </style>
 </head>
 <body>
-  <img class="logo" src="https://i.imgur.com/AbyTxH1.png" alt="logo">
+  <img class="logo" src="https://i.imgur.com/AbyTxH1.png" alt="Company Logo">
 
-  <div class="scene" id="scene">
-    <div class="nav-zone nav-left" id="prevZone"></div>
-    <div class="nav-zone nav-right" id="nextZone"></div>
+  <div class="left-zone"></div>
+  <div class="right-zone"></div>
 
-    <div class="slides" id="slides">
-      <!-- 原始四页（真实内容） -->
-      <div class="slide" data-bg="linear-gradient(135deg,#FFD8B1,#FFDCC0)">
-        <div class="card">
+  <div class="scene">
+    <div class="carousel" id="carousel">
+      <!-- 复制首尾做无限循环 -->
+      <div class="card" style="background:#C1E1FF;">
+        <div class="card-content">
+          <h2>💖 部门士气排行榜</h2>
+          <table>
+            <tr><th>名次</th><th>部门</th><th>满意度</th></tr>
+            <tr><td>🥇 1</td><td>QA</td><td>98%</td></tr>
+            <tr><td>🥈 2</td><td>Production</td><td>94%</td></tr>
+            <tr><td>🥉 3</td><td>Engineering</td><td>91%</td></tr>
+            <tr><td>4</td><td>Admin</td><td>89%</td></tr>
+            <tr><td>5</td><td>HR</td><td>87%</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#FFD8B1;">
+        <div class="card-content">
           <h2>🏆 本月个人贡献排行</h2>
           <table>
             <tr><th>名次</th><th>姓名</th><th>分数</th></tr>
@@ -94,8 +140,8 @@
         </div>
       </div>
 
-      <div class="slide" data-bg="linear-gradient(135deg,#FFDAC1,#FFE8D6)">
-        <div class="card">
+      <div class="card" style="background:#FFDAC1;">
+        <div class="card-content">
           <h2>🌍 年度团队贡献排行</h2>
           <table>
             <tr><th>名次</th><th>团队</th><th>分数</th></tr>
@@ -108,8 +154,8 @@
         </div>
       </div>
 
-      <div class="slide" data-bg="linear-gradient(135deg,#C1FFD7,#E8FFF0)">
-        <div class="card">
+      <div class="card" style="background:#C1FFD7;">
+        <div class="card-content">
           <h2>⚙️ 综合效率排行</h2>
           <table>
             <tr><th>名次</th><th>姓名</th><th>效率</th></tr>
@@ -122,8 +168,8 @@
         </div>
       </div>
 
-      <div class="slide" data-bg="linear-gradient(135deg,#C1E1FF,#EAF6FF)">
-        <div class="card">
+      <div class="card" style="background:#C1E1FF;">
+        <div class="card-content">
           <h2>💖 部门士气排行榜</h2>
           <table>
             <tr><th>名次</th><th>部门</th><th>满意度</th></tr>
@@ -139,133 +185,87 @@
   </div>
 
 <script>
-(function(){
-  const slidesEl = document.getElementById('slides');
-  const scene = document.getElementById('scene');
-  const prevZone = document.getElementById('prevZone');
-  const nextZone = document.getElementById('nextZone');
+const carousel = document.getElementById('carousel');
+const cards = carousel.children;
+const total = cards.length;
+const colors = [
+  "linear-gradient(135deg, #FFF8E7, #E3F2FD)",
+  "linear-gradient(135deg, #E8FFF8, #FFF5E1)",
+  "linear-gradient(135deg, #FFF0F5, #E3FFF7)",
+  "linear-gradient(135deg, #F0FFF3, #E8E8FF)"
+];
 
-  let realSlides = Array.from(slidesEl.querySelectorAll('.slide')); // 4 real slides
-  const realCount = realSlides.length;
+let index = 1; // 因为第一张是复制的最后一张
+let width = cards[0].offsetWidth;
+carousel.style.transform = `translateX(-${width * index}px)`;
+document.body.style.background = colors[0];
 
-  // 克隆首尾用于无缝
-  const firstClone = realSlides[0].cloneNode(true);
-  const lastClone = realSlides[realSlides.length - 1].cloneNode(true);
-  slidesEl.appendChild(firstClone);      // 在末尾追加 first clone
-  slidesEl.insertBefore(lastClone, slidesEl.firstChild); // 在开头插入 last clone
+function updateBackground() {
+  document.body.style.background = colors[(index - 1 + 4) % 4];
+}
 
-  // 现在 slidesEl 包含： [clone-last, real1, real2, real3, real4, clone-first]
-  let currentIndex = 1; // 指向真实第一张的位置（因为开头有一个 clone）
-  let isAnimating = false;
-  const transitionDuration = 900; // ms
-  let autoTimer = null;
-  const AUTO_INTERVAL = 8000;
+function slideTo(i) {
+  carousel.style.transition = "transform 1s ease-in-out";
+  carousel.style.transform = `translateX(-${width * i}px)`;
+  updateBackground();
+}
 
-  // 初始化位置（移动到 index=1）
-  function setTranslateImmediate(index) {
-    slidesEl.style.transition = 'none';
-    slidesEl.style.transform = `translateX(-${index * 100}%)`;
-    // 强制重绘以确保 transition none 生效后再恢复
-    void slidesEl.offsetWidth;
+function next() {
+  index++;
+  slideTo(index);
+}
+
+function prev() {
+  index--;
+  slideTo(index);
+}
+
+carousel.addEventListener('transitionend', () => {
+  if (index === total - 1) {
+    carousel.style.transition = "none";
+    index = 1;
+    carousel.style.transform = `translateX(-${width * index}px)`;
   }
-
-  function setTranslateWithAnim(index) {
-    slidesEl.style.transition = `transform ${transitionDuration}ms cubic-bezier(.22,.9,.28,1)`;
-    slidesEl.style.transform = `translateX(-${index * 100}%)`;
+  if (index === 0) {
+    carousel.style.transition = "none";
+    index = total - 2;
+    carousel.style.transform = `translateX(-${width * index}px)`;
   }
+});
 
-  // 更新背景（基于真实 slide index）
-  function updateBackgroundFromIndex(idx) {
-    // idx is currentIndex (includes clones). real index = (idx -1)
-    let realIdx = (idx - 1);
-    if (realIdx < 0) realIdx = realCount - 1;
-    if (realIdx >= realCount) realIdx = 0;
-    const allReal = Array.from(slidesEl.querySelectorAll('.slide')).slice(1, 1 + realCount);
-    const bg = allReal[realIdx].getAttribute('data-bg') || 'linear-gradient(135deg,#FFEFEF,#E8FFF8)';
-    document.body.style.background = bg;
-  }
+let auto = setInterval(next, 8000);
 
-  // 初始化
-  setTranslateImmediate(currentIndex);
-  updateBackgroundFromIndex(currentIndex);
+// 触控滑动
+let startX = 0;
+document.body.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+document.body.addEventListener("touchend", e => {
+  let diff = e.changedTouches[0].clientX - startX;
+  if (diff > 50) prev();
+  if (diff < -50) next();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
 
-  // 监听 transitionend 用于“跳位”逻辑
-  slidesEl.addEventListener('transitionend', () => {
-    isAnimating = false;
-    // 如果到达 clone-first（末尾的 clone），立刻跳回真实 first（index =1）
-    if (currentIndex === realCount + 1) {
-      setTranslateImmediate(1);
-      currentIndex = 1;
-    }
-    // 如果到达 clone-last（开头的 clone），立刻跳到真实 last（index = realCount）
-    if (currentIndex === 0) {
-      setTranslateImmediate(realCount);
-      currentIndex = realCount;
-    }
-    updateBackgroundFromIndex(currentIndex);
-  });
+// 点击左右半屏（电脑用）
+document.querySelector(".left-zone").addEventListener("click", () => {
+  prev();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
+document.querySelector(".right-zone").addEventListener("click", () => {
+  next();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
 
-  function goNext() {
-    if (isAnimating) return;
-    isAnimating = true;
-    currentIndex++;
-    setTranslateWithAnim(currentIndex);
-    updateBackgroundFromIndex(currentIndex);
-    resetAuto();
-  }
-
-  function goPrev() {
-    if (isAnimating) return;
-    isAnimating = true;
-    currentIndex--;
-    setTranslateWithAnim(currentIndex);
-    updateBackgroundFromIndex(currentIndex);
-    resetAuto();
-  }
-
-  // 点击区域
-  nextZone.addEventListener('click', goNext);
-  prevZone.addEventListener('click', goPrev);
-
-  // 触控支持
-  let startX = 0;
-  let moved = false;
-  scene.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-    moved = false;
-  }, {passive:true});
-  scene.addEventListener('touchend', (e) => {
-    const diff = e.changedTouches[0].clientX - startX;
-    if (Math.abs(diff) < 40) return;
-    if (diff < 0) goNext(); else goPrev();
-  });
-
-  // 自动播放
-  function startAuto(){
-    stopAuto();
-    autoTimer = setInterval(() => { goNext(); }, AUTO_INTERVAL);
-  }
-  function stopAuto(){
-    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-  }
-  function resetAuto(){ stopAuto(); startAuto(); }
-
-  // 防止页面不可见时继续跑（节省资源并避免错位）
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stopAuto(); else startAuto();
-  });
-
-  // 启动
-  startAuto();
-
-  // 防止快速连续点两次（在 isAnimating 基础上再加个超时保险）
-  slidesEl.addEventListener('transitionstart', () => {
-    setTimeout(() => { isAnimating = false; }, transitionDuration + 50);
-  });
-
-})();
+window.addEventListener("resize", () => {
+  width = cards[0].offsetWidth;
+  carousel.style.transition = "none";
+  carousel.style.transform = `translateX(-${width * index}px)`;
+});
 </script>
 </body>
 </html>
+
 
 
