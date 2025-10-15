@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排行榜展示（平移切换）</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #FFEFEF, #E8FFF8);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 2s ease;
+  }
+
+  .scene {
+    width: 900px;
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .carousel {
+    display: flex;
+    width: 400%;
+    height: 100%;
+    transition: transform 1s ease-in-out;
+  }
+
+  .card {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-content {
+    width: 90%;
+    height: 85%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  table {
+    width: 100%;
+    font-size: 1.2rem;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 0.6rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  th {
+    background-color: rgba(255,255,255,0.6);
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255,255,255,0.4);
+  }
+
+  img.logo {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+  }
+
+  @media(max-width: 800px){
+    .scene{ width: 100vw; height: 80vh; }
+    h2{ font-size: 1.4rem; }
+    table{ font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+  <img class="logo" src="https://i.imgur.com/AbyTxH1.png" alt="Company Logo">
+
+  <div class="scene">
+    <div class="carousel" id="carousel">
+      <div class="card" style="background:#FFD8B1;">
+        <div class="card-content">
+          <h2>🏆 本月个人贡献排行</h2>
+          <table>
+            <tr><th>名次</th><th>姓名</th><th>分数</th></tr>
+            <tr><td>🥇 1</td><td>Albert</td><td>1320</td></tr>
+            <tr><td>🥈 2</td><td>Aung Thant</td><td>1180</td></tr>
+            <tr><td>🥉 3</td><td>Mei Ling</td><td>970</td></tr>
+            <tr><td>4</td><td>Jin Wei</td><td>920</td></tr>
+            <tr><td>5</td><td>Siti</td><td>870</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#FFDAC1;">
+        <div class="card-content">
+          <h2>🌍 年度团队贡献排行</h2>
+          <table>
+            <tr><th>名次</th><th>团队</th><th>分数</th></tr>
+            <tr><td>🥇 1</td><td>Production</td><td>8200</td></tr>
+            <tr><td>🥈 2</td><td>QA</td><td>7900</td></tr>
+            <tr><td>🥉 3</td><td>Purchasing</td><td>7100</td></tr>
+            <tr><td>4</td><td>Engineering</td><td>6900</td></tr>
+            <tr><td>5</td><td>HR</td><td>6400</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#C1FFD7;">
+        <div class="card-content">
+          <h2>⚙️ 综合效率排行</h2>
+          <table>
+            <tr><th>名次</th><th>姓名</th><th>效率</th></tr>
+            <tr><td>1</td><td>Albert</td><td>93%</td></tr>
+            <tr><td>2</td><td>Aung Thant</td><td>88%</td></tr>
+            <tr><td>3</td><td>Mei Ling</td><td>81%</td></tr>
+            <tr><td>4</td><td>Jin Wei</td><td>79%</td></tr>
+            <tr><td>5</td><td>Siti</td><td>76%</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#C1E1FF;">
+        <div class="card-content">
+          <h2>💖 部门士气排行榜</h2>
+          <table>
+            <tr><th>名次</th><th>部门</th><th>满意度</th></tr>
+            <tr><td>🥇 1</td><td>QA</td><td>98%</td></tr>
+            <tr><td>🥈 2</td><td>Production</td><td>94%</td></tr>
+            <tr><td>🥉 3</td><td>Engineering</td><td>91%</td></tr>
+            <tr><td>4</td><td>Admin</td><td>89%</td></tr>
+            <tr><td>5</td><td>HR</td><td>87%</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+let index = 0;
+const carousel = document.getElementById('carousel');
+const colors = [
+  "linear-gradient(135deg, #FFF8E7, #E3F2FD)",
+  "linear-gradient(135deg, #E8FFF8, #FFF5E1)",
+  "linear-gradient(135deg, #FFF0F5, #E3FFF7)",
+  "linear-gradient(135deg, #F0FFF3, #E8E8FF)"
+];
+
+function slideTo(i) {
+  carousel.style.transform = `translateX(-${i * 100}%)`;
+  document.body.style.background = colors[i % colors.length];
+}
+
+function autoSlide() {
+  index = (index + 1) % 4;
+  slideTo(index);
+}
+
+let auto = setInterval(autoSlide, 4000);
+
+// 触控滑动支持
+let startX = 0;
+document.body.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+document.body.addEventListener("touchend", e => {
+  let diff = e.changedTouches[0].clientX - startX;
+  if (diff > 50) index = (index - 1 + 4) % 4;
+  if (diff < -50) index = (index + 1) % 4;
+  slideTo(index);
+  clearInterval(auto);
+  auto = setInterval(autoSlide, 4000);
+});
+</script>
+</body>
+</html>
