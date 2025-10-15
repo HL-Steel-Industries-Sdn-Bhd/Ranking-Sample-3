@@ -3,215 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D 排行榜展示</title>
+<title>排行榜展示（最终平移版）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <style>
   body {
     margin: 0;
     height: 100vh;
+    background: linear-gradient(135deg, #FFEFEF, #E8FFF8);
+    font-family: 'Poppins', sans-serif;
     overflow: hidden;
-    background: linear-gradient(135deg, #5A8DEE, #8E54E9);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background 1s ease;
+    transition: background 2s ease;
   }
 
-  .slider {
+  .scene {
+    width: 900px;
+    height: 600px;
     position: relative;
-    width: 80%;
-    height: 70%;
     overflow: hidden;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   }
 
-  .slides {
+  .carousel {
     display: flex;
-    height: 100%;
-    transition: transform 1s ease;
+    transition: transform 1s ease-in-out;
   }
 
-  .slide {
-    min-width: 100%;
-    height: 100%;
+  .card {
+    flex: 0 0 900px;
+    height: 600px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: white;
   }
 
-  .slide table {
-    width: 80%;
-    border-collapse: collapse;
-    background: rgba(255,255,255,0.15);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  }
-
-  .slide th, .slide td {
-    padding: 10px;
+  .card-content {
+    width: 90%;
+    height: 85%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 1rem;
     text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    overflow: auto;
   }
 
-  .slide th {
-    background: rgba(255,255,255,0.2);
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
   }
 
-  .arrow {
+  table {
+    width: 100%;
+    font-size: 1.2rem;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 0.6rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  th {
+    background-color: rgba(255,255,255,0.6);
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255,255,255,0.4);
+  }
+
+  img.logo {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 4rem;
-    font-weight: bold;
-    color: white;
-    text-shadow: 0 0 15px rgba(255,255,255,0.5), 0 4px 8px rgba(0,0,0,0.4);
-    opacity: 0.6;
-    user-select: none;
-    pointer-events: none; /* 不挡点击逻辑 */
-    animation: glow 2s infinite alternate;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
   }
 
-  .arrow.left {
-    left: 5%;
-  }
-  .arrow.right {
-    right: 5%;
-  }
-
-  @keyframes glow {
-    from { text-shadow: 0 0 10px rgba(255,255,255,0.3); opacity: 0.5; }
-    to { text-shadow: 0 0 25px rgba(255,255,255,0.8); opacity: 0.9; }
-  }
-
-  .click-zone {
-    position: absolute;
+  /* 点击区域（隐藏但可点击） */
+  .left-zone, .right-zone {
+    position: fixed;
     top: 0;
     width: 50%;
     height: 100%;
     z-index: 10;
   }
-  .click-zone.left { left: 0; }
-  .click-zone.right { right: 0; }
+  .left-zone { left: 0; }
+  .right-zone { right: 0; }
 
+  @media(max-width: 800px){
+    .scene { width: 100vw; height: 80vh; }
+    .card { flex: 0 0 100vw; height: 80vh; }
+    h2 { font-size: 1.4rem; }
+    table { font-size: 1rem; }
+  }
 </style>
 </head>
 <body>
-  <div class="slider">
-    <div class="slides">
-      <div class="slide" style="background: linear-gradient(135deg, #FF7E5F, #FEB47B);">
-        <h2>排行榜 1</h2>
-        <table>
-          <tr><th>Rank</th><th>Name</th><th>Score</th></tr>
-          <tr><td>1</td><td>Albert</td><td>96</td></tr>
-          <tr><td>2</td><td>Bella</td><td>92</td></tr>
-          <tr><td>3</td><td>Chris</td><td>88</td></tr>
-        </table>
+  <img class="logo" src="https://i.imgur.com/AbyTxH1.png" alt="Company Logo">
+
+  <div class="left-zone"></div>
+  <div class="right-zone"></div>
+
+  <div class="scene">
+    <div class="carousel" id="carousel">
+      <!-- 复制首尾做无限循环 -->
+      <div class="card" style="background:#C1E1FF;">
+        <div class="card-content">
+          <h2>💖 部门士气排行榜</h2>
+          <table>
+            <tr><th>名次</th><th>部门</th><th>满意度</th></tr>
+            <tr><td>🥇 1</td><td>QA</td><td>98%</td></tr>
+            <tr><td>🥈 2</td><td>Production</td><td>94%</td></tr>
+            <tr><td>🥉 3</td><td>Engineering</td><td>91%</td></tr>
+            <tr><td>4</td><td>Admin</td><td>89%</td></tr>
+            <tr><td>5</td><td>HR</td><td>87%</td></tr>
+          </table>
+        </div>
       </div>
-      <div class="slide" style="background: linear-gradient(135deg, #43C6AC, #191654);">
-        <h2>排行榜 2</h2>
-        <table>
-          <tr><th>Rank</th><th>Name</th><th>Score</th></tr>
-          <tr><td>1</td><td>Diana</td><td>98</td></tr>
-          <tr><td>2</td><td>Eric</td><td>90</td></tr>
-          <tr><td>3</td><td>Fiona</td><td>87</td></tr>
-        </table>
+
+      <div class="card" style="background:#FFD8B1;">
+        <div class="card-content">
+          <h2>🏆 本月个人贡献排行</h2>
+          <table>
+            <tr><th>名次</th><th>姓名</th><th>分数</th></tr>
+            <tr><td>🥇 1</td><td>Albert</td><td>1320</td></tr>
+            <tr><td>🥈 2</td><td>Aung Thant</td><td>1180</td></tr>
+            <tr><td>🥉 3</td><td>Mei Ling</td><td>970</td></tr>
+            <tr><td>4</td><td>Jin Wei</td><td>920</td></tr>
+            <tr><td>5</td><td>Siti</td><td>870</td></tr>
+          </table>
+        </div>
       </div>
-      <div class="slide" style="background: linear-gradient(135deg, #30E8BF, #FF8235);">
-        <h2>排行榜 3</h2>
-        <table>
-          <tr><th>Rank</th><th>Name</th><th>Score</th></tr>
-          <tr><td>1</td><td>George</td><td>93</td></tr>
-          <tr><td>2</td><td>Hannah</td><td>91</td></tr>
-          <tr><td>3</td><td>Ivan</td><td>85</td></tr>
-        </table>
+
+      <div class="card" style="background:#FFDAC1;">
+        <div class="card-content">
+          <h2>🌍 年度团队贡献排行</h2>
+          <table>
+            <tr><th>名次</th><th>团队</th><th>分数</th></tr>
+            <tr><td>🥇 1</td><td>Production</td><td>8200</td></tr>
+            <tr><td>🥈 2</td><td>QA</td><td>7900</td></tr>
+            <tr><td>🥉 3</td><td>Purchasing</td><td>7100</td></tr>
+            <tr><td>4</td><td>Engineering</td><td>6900</td></tr>
+            <tr><td>5</td><td>HR</td><td>6400</td></tr>
+          </table>
+        </div>
       </div>
-      <div class="slide" style="background: linear-gradient(135deg, #4E54C8, #8F94FB);">
-        <h2>排行榜 4</h2>
-        <table>
-          <tr><th>Rank</th><th>Name</th><th>Score</th></tr>
-          <tr><td>1</td><td>Jack</td><td>99</td></tr>
-          <tr><td>2</td><td>Kate</td><td>95</td></tr>
-          <tr><td>3</td><td>Leo</td><td>90</td></tr>
-        </table>
+
+      <div class="card" style="background:#C1FFD7;">
+        <div class="card-content">
+          <h2>⚙️ 综合效率排行</h2>
+          <table>
+            <tr><th>名次</th><th>姓名</th><th>效率</th></tr>
+            <tr><td>1</td><td>Albert</td><td>93%</td></tr>
+            <tr><td>2</td><td>Aung Thant</td><td>88%</td></tr>
+            <tr><td>3</td><td>Mei Ling</td><td>81%</td></tr>
+            <tr><td>4</td><td>Jin Wei</td><td>79%</td></tr>
+            <tr><td>5</td><td>Siti</td><td>76%</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#C1E1FF;">
+        <div class="card-content">
+          <h2>💖 部门士气排行榜</h2>
+          <table>
+            <tr><th>名次</th><th>部门</th><th>满意度</th></tr>
+            <tr><td>🥇 1</td><td>QA</td><td>98%</td></tr>
+            <tr><td>🥈 2</td><td>Production</td><td>94%</td></tr>
+            <tr><td>🥉 3</td><td>Engineering</td><td>91%</td></tr>
+            <tr><td>4</td><td>Admin</td><td>89%</td></tr>
+            <tr><td>5</td><td>HR</td><td>87%</td></tr>
+          </table>
+        </div>
       </div>
     </div>
-
-    <!-- 装饰箭头 -->
-    <div class="arrow left">❮</div>
-    <div class="arrow right">❯</div>
-
-    <!-- 点击区域 -->
-    <div class="click-zone left"></div>
-    <div class="click-zone right"></div>
   </div>
 
 <script>
-  const slides = document.querySelector('.slides');
-  const slideCount = document.querySelectorAll('.slide').length;
-  let index = 0;
-  let startX = 0;
-  let endX = 0;
-  let autoSlide;
+const carousel = document.getElementById('carousel');
+const cards = carousel.children;
+const total = cards.length;
+const colors = [
+  "linear-gradient(135deg, #FFF8E7, #E3F2FD)",
+  "linear-gradient(135deg, #E8FFF8, #FFF5E1)",
+  "linear-gradient(135deg, #FFF0F5, #E3FFF7)",
+  "linear-gradient(135deg, #F0FFF3, #E8E8FF)"
+];
 
-  function updateSlide() {
-    slides.style.transition = 'transform 1s ease';
-    slides.style.transform = `translateX(${-index * 100}%)`;
+let index = 1; // 因为第一张是复制的最后一张
+let width = cards[0].offsetWidth;
+carousel.style.transform = `translateX(-${width * index}px)`;
+document.body.style.background = colors[0];
+
+function updateBackground() {
+  document.body.style.background = colors[(index - 1 + 4) % 4];
+}
+
+function slideTo(i) {
+  carousel.style.transition = "transform 1s ease-in-out";
+  carousel.style.transform = `translateX(-${width * i}px)`;
+  updateBackground();
+}
+
+function next() {
+  index++;
+  slideTo(index);
+}
+
+function prev() {
+  index--;
+  slideTo(index);
+}
+
+carousel.addEventListener('transitionend', () => {
+  if (index === total - 1) {
+    carousel.style.transition = "none";
+    index = 1;
+    carousel.style.transform = `translateX(-${width * index}px)`;
   }
-
-  function goNext() {
-    index = (index + 1) % slideCount;
-    updateSlide();
+  if (index === 0) {
+    carousel.style.transition = "none";
+    index = total - 2;
+    carousel.style.transform = `translateX(-${width * index}px)`;
   }
+});
 
-  function goPrev() {
-    index = (index - 1 + slideCount) % slideCount;
-    updateSlide();
-  }
+let auto = setInterval(next, 8000);
 
-  function startAutoSlide() {
-    autoSlide = setInterval(goNext, 8000);
-  }
+// 触控滑动
+let startX = 0;
+document.body.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+document.body.addEventListener("touchend", e => {
+  let diff = e.changedTouches[0].clientX - startX;
+  if (diff > 50) prev();
+  if (diff < -50) next();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
 
-  function stopAutoSlide() {
-    clearInterval(autoSlide);
-  }
+// 点击左右半屏（电脑用）
+document.querySelector(".left-zone").addEventListener("click", () => {
+  prev();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
+document.querySelector(".right-zone").addEventListener("click", () => {
+  next();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
 
-  document.querySelector('.click-zone.left').addEventListener('click', () => {
-    stopAutoSlide();
-    goPrev();
-    startAutoSlide();
-  });
-  document.querySelector('.click-zone.right').addEventListener('click', () => {
-    stopAutoSlide();
-    goNext();
-    startAutoSlide();
-  });
-
-  slides.addEventListener('touchstart', e => {
-    stopAutoSlide();
-    startX = e.touches[0].clientX;
-  });
-
-  slides.addEventListener('touchmove', e => {
-    endX = e.touches[0].clientX;
-  });
-
-  slides.addEventListener('touchend', () => {
-    if (startX - endX > 50) goNext();
-    else if (endX - startX > 50) goPrev();
-    startAutoSlide();
-  });
-
-  startAutoSlide();
+window.addEventListener("resize", () => {
+  width = cards[0].offsetWidth;
+  carousel.style.transition = "none";
+  carousel.style.transform = `translateX(-${width * index}px)`;
+});
 </script>
 </body>
 </html>
+
 
 
 
