@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排行榜展示（平移切换修正版）</title>
+<title>3D 排行榜展示（平移 + 独立渐变背景）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <style>
   body {
     margin: 0;
     height: 100vh;
-    background: linear-gradient(135deg, #FFEFEF, #E8FFF8);
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: background 2s ease;
+    background: linear-gradient(135deg, #FFEFEF, #E8FFF8);
   }
 
   .scene {
@@ -23,23 +23,22 @@
     height: 600px;
     position: relative;
     overflow: hidden;
+    border-radius: 25px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
   }
 
-  /* ✅ 改成固定宽度、禁止压缩 */
   .carousel {
     display: flex;
-    flex-wrap: nowrap;
     width: 400%;
     height: 100%;
-    transition: transform 1s ease-in-out;
+    transition: transform 1.5s ease-in-out;
   }
 
   .card {
-    flex: 0 0 25%; /* ✅ 每张固定占总宽的1/4 */
-    width: 900px;  /* ✅ 确保内部布局不压缩 */
+    flex: 0 0 25%;
+    width: 900px;
     height: 100%;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    border-radius: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -48,7 +47,7 @@
   .card-content {
     width: 90%;
     height: 85%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255,255,255,0.9);
     border-radius: 20px;
     padding: 1rem;
     text-align: center;
@@ -87,7 +86,20 @@
     left: 50%;
     transform: translateX(-50%);
     width: 140px;
+    z-index: 10;
   }
+
+  /* ✅ 隐形左右点击区域 */
+  .nav-zone {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    cursor: pointer;
+    z-index: 5;
+  }
+  .nav-left { left: 0; }
+  .nav-right { right: 0; }
 
   @media(max-width: 800px){
     .scene{ width: 100vw; height: 80vh; }
@@ -101,6 +113,10 @@
   <img class="logo" src="https://i.imgur.com/AbyTxH1.png" alt="Company Logo">
 
   <div class="scene">
+    <!-- 左右隐形点击区 -->
+    <div class="nav-zone nav-left" id="prevZone"></div>
+    <div class="nav-zone nav-right" id="nextZone"></div>
+
     <div class="carousel" id="carousel">
       <div class="card" style="background:#FFD8B1;">
         <div class="card-content">
@@ -163,6 +179,9 @@
 <script>
 let index = 0;
 const carousel = document.getElementById('carousel');
+const prevZone = document.getElementById('prevZone');
+const nextZone = document.getElementById('nextZone');
+
 const colors = [
   "linear-gradient(135deg, #FFF8E7, #E3F2FD)",
   "linear-gradient(135deg, #E8FFF8, #FFF5E1)",
@@ -171,7 +190,7 @@ const colors = [
 ];
 
 function slideTo(i) {
-  carousel.style.transform = `translateX(-${i * 25}%)`; // ✅ 因为每张是25%
+  carousel.style.transform = `translateX(-${i * 25}%)`;
   document.body.style.background = colors[i % colors.length];
 }
 
@@ -180,7 +199,19 @@ function autoSlide() {
   slideTo(index);
 }
 
-let auto = setInterval(autoSlide, 4000);
+let auto = setInterval(autoSlide, 8000);
+
+// 左右点击
+nextZone.addEventListener("click", () => {
+  index = (index + 1) % 4;
+  slideTo(index);
+  resetAuto();
+});
+prevZone.addEventListener("click", () => {
+  index = (index - 1 + 4) % 4;
+  slideTo(index);
+  resetAuto();
+});
 
 // 触控滑动支持
 let startX = 0;
@@ -190,10 +221,15 @@ document.body.addEventListener("touchend", e => {
   if (diff > 50) index = (index - 1 + 4) % 4;
   if (diff < -50) index = (index + 1) % 4;
   slideTo(index);
-  clearInterval(auto);
-  auto = setInterval(autoSlide, 4000);
+  resetAuto();
 });
+
+function resetAuto(){
+  clearInterval(auto);
+  auto = setInterval(autoSlide, 8000);
+}
 </script>
 </body>
 </html>
+
 
