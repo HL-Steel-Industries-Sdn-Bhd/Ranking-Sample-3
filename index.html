@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排行榜展示（平移切换）</title>
+<title>排行榜展示（平移切换修正版）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <style>
   body {
@@ -25,16 +25,18 @@
     overflow: hidden;
   }
 
+  /* ✅ 改成固定宽度、禁止压缩 */
   .carousel {
     display: flex;
+    flex-wrap: nowrap;
     width: 400%;
     height: 100%;
     transition: transform 1s ease-in-out;
   }
 
   .card {
-    flex: 0 0 100%;
-    width: 100%;
+    flex: 0 0 25%; /* ✅ 每张固定占总宽的1/4 */
+    width: 900px;  /* ✅ 确保内部布局不压缩 */
     height: 100%;
     border-radius: 20px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
@@ -51,6 +53,7 @@
     padding: 1rem;
     text-align: center;
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    overflow: auto;
   }
 
   h2 {
@@ -88,6 +91,7 @@
 
   @media(max-width: 800px){
     .scene{ width: 100vw; height: 80vh; }
+    .card{ width: 100vw; }
     h2{ font-size: 1.4rem; }
     table{ font-size: 1rem; }
   }
@@ -167,7 +171,7 @@ const colors = [
 ];
 
 function slideTo(i) {
-  carousel.style.transform = `translateX(-${i * 100}%)`;
+  carousel.style.transform = `translateX(-${i * 25}%)`; // ✅ 因为每张是25%
   document.body.style.background = colors[i % colors.length];
 }
 
@@ -192,3 +196,4 @@ document.body.addEventListener("touchend", e => {
 </script>
 </body>
 </html>
+
