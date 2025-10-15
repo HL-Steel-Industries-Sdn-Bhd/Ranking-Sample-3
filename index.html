@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>排行榜展示（带立体箭头）</title>
+<title>排行榜展示（最终平移版）</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <style>
   body {
@@ -23,7 +23,6 @@
     height: 600px;
     position: relative;
     overflow: hidden;
-    border-radius: 20px;
   }
 
   .carousel {
@@ -96,38 +95,30 @@
   .left-zone { left: 0; }
   .right-zone { right: 0; }
 
-  /* 立体箭头 */
+  /* 🌟 立体发光箭头（装饰用） */
   .arrow {
-    position: absolute;
+    position: fixed;
     top: 50%;
-    font-size: 3.5rem;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 3px 8px rgba(0,0,0,0.3);
-    background: rgba(0,0,0,0.25);
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     transform: translateY(-50%);
-    cursor: pointer;
-    z-index: 15;
-    transition: all 0.3s ease;
+    font-size: 4rem;
+    font-weight: bold;
+    color: white;
+    text-shadow:
+      0 0 10px rgba(255,255,255,0.6),
+      0 0 20px rgba(255,255,255,0.4),
+      2px 4px 6px rgba(0,0,0,0.5);
+    opacity: 0.6;
+    pointer-events: none; /* 确保不挡点击 */
+    user-select: none;
+    animation: pulseGlow 2s infinite alternate;
   }
 
-  .arrow:hover {
-    background: rgba(255,255,255,0.4);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 0 15px rgba(255,255,255,0.6);
-  }
+  .arrow.left { left: 3%; }
+  .arrow.right { right: 3%; }
 
-  .arrow-left {
-    left: 20px;
-  }
-
-  .arrow-right {
-    right: 20px;
+  @keyframes pulseGlow {
+    from { text-shadow: 0 0 8px rgba(255,255,255,0.5); opacity: 0.5; }
+    to { text-shadow: 0 0 25px rgba(255,255,255,1); opacity: 0.9; }
   }
 
   @media(max-width: 800px){
@@ -135,29 +126,79 @@
     .card { flex: 0 0 100vw; height: 80vh; }
     h2 { font-size: 1.4rem; }
     table { font-size: 1rem; }
-    .arrow {
-      font-size: 2.5rem;
-      width: 50px;
-      height: 50px;
-    }
+    .arrow { font-size: 3rem; opacity: 0.5; }
   }
 </style>
 </head>
 <body>
   <img class="logo" src="https://i.imgur.com/AbyTxH1.png" alt="Company Logo">
 
+  <!-- 装饰箭头 -->
+  <div class="arrow left">❮</div>
+  <div class="arrow right">❯</div>
+
   <div class="left-zone"></div>
   <div class="right-zone"></div>
 
   <div class="scene">
-    <!-- 左右立体箭头 -->
-    <div class="arrow arrow-left" onclick="manualPrev()">&#8249;</div>
-    <div class="arrow arrow-right" onclick="manualNext()">&#8250;</div>
-
     <div class="carousel" id="carousel">
-      <!-- 第一张到第四张略（保持不变） -->
-      <!-- 你原来的表格内容不动 -->
-      <!-- ↓↓↓ 以下只保留你的最后部分为例 -->
+      <!-- 复制首尾做无限循环 -->
+      <div class="card" style="background:#C1E1FF;">
+        <div class="card-content">
+          <h2>💖 部门士气排行榜</h2>
+          <table>
+            <tr><th>名次</th><th>部门</th><th>满意度</th></tr>
+            <tr><td>🥇 1</td><td>QA</td><td>98%</td></tr>
+            <tr><td>🥈 2</td><td>Production</td><td>94%</td></tr>
+            <tr><td>🥉 3</td><td>Engineering</td><td>91%</td></tr>
+            <tr><td>4</td><td>Admin</td><td>89%</td></tr>
+            <tr><td>5</td><td>HR</td><td>87%</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#FFD8B1;">
+        <div class="card-content">
+          <h2>🏆 本月个人贡献排行</h2>
+          <table>
+            <tr><th>名次</th><th>姓名</th><th>分数</th></tr>
+            <tr><td>🥇 1</td><td>Albert</td><td>1320</td></tr>
+            <tr><td>🥈 2</td><td>Aung Thant</td><td>1180</td></tr>
+            <tr><td>🥉 3</td><td>Mei Ling</td><td>970</td></tr>
+            <tr><td>4</td><td>Jin Wei</td><td>920</td></tr>
+            <tr><td>5</td><td>Siti</td><td>870</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#FFDAC1;">
+        <div class="card-content">
+          <h2>🌍 年度团队贡献排行</h2>
+          <table>
+            <tr><th>名次</th><th>团队</th><th>分数</th></tr>
+            <tr><td>🥇 1</td><td>Production</td><td>8200</td></tr>
+            <tr><td>🥈 2</td><td>QA</td><td>7900</td></tr>
+            <tr><td>🥉 3</td><td>Purchasing</td><td>7100</td></tr>
+            <tr><td>4</td><td>Engineering</td><td>6900</td></tr>
+            <tr><td>5</td><td>HR</td><td>6400</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:#C1FFD7;">
+        <div class="card-content">
+          <h2>⚙️ 综合效率排行</h2>
+          <table>
+            <tr><th>名次</th><th>姓名</th><th>效率</th></tr>
+            <tr><td>1</td><td>Albert</td><td>93%</td></tr>
+            <tr><td>2</td><td>Aung Thant</td><td>88%</td></tr>
+            <tr><td>3</td><td>Mei Ling</td><td>81%</td></tr>
+            <tr><td>4</td><td>Jin Wei</td><td>79%</td></tr>
+            <tr><td>5</td><td>Siti</td><td>76%</td></tr>
+          </table>
+        </div>
+      </div>
+
       <div class="card" style="background:#C1E1FF;">
         <div class="card-content">
           <h2>💖 部门士气排行榜</h2>
@@ -185,7 +226,7 @@ const colors = [
   "linear-gradient(135deg, #F0FFF3, #E8E8FF)"
 ];
 
-let index = 1;
+let index = 1; // 因为第一张是复制的最后一张
 let width = cards[0].offsetWidth;
 carousel.style.transform = `translateX(-${width * index}px)`;
 document.body.style.background = colors[0];
@@ -200,8 +241,15 @@ function slideTo(i) {
   updateBackground();
 }
 
-function next() { index++; slideTo(index); }
-function prev() { index--; slideTo(index); }
+function next() {
+  index++;
+  slideTo(index);
+}
+
+function prev() {
+  index--;
+  slideTo(index);
+}
 
 carousel.addEventListener('transitionend', () => {
   if (index === total - 1) {
@@ -218,26 +266,28 @@ carousel.addEventListener('transitionend', () => {
 
 let auto = setInterval(next, 8000);
 
-function manualPrev() { prev(); resetAuto(); }
-function manualNext() { next(); resetAuto(); }
-
-function resetAuto() {
-  clearInterval(auto);
-  auto = setInterval(next, 8000);
-}
-
 // 触控滑动
 let startX = 0;
 document.body.addEventListener("touchstart", e => startX = e.touches[0].clientX);
 document.body.addEventListener("touchend", e => {
   let diff = e.changedTouches[0].clientX - startX;
-  if (diff > 50) manualPrev();
-  if (diff < -50) manualNext();
+  if (diff > 50) prev();
+  if (diff < -50) next();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
 });
 
 // 点击左右半屏（电脑用）
-document.querySelector(".left-zone").addEventListener("click", manualPrev);
-document.querySelector(".right-zone").addEventListener("click", manualNext);
+document.querySelector(".left-zone").addEventListener("click", () => {
+  prev();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
+document.querySelector(".right-zone").addEventListener("click", () => {
+  next();
+  clearInterval(auto);
+  auto = setInterval(next, 8000);
+});
 
 window.addEventListener("resize", () => {
   width = cards[0].offsetWidth;
@@ -247,7 +297,6 @@ window.addEventListener("resize", () => {
 </script>
 </body>
 </html>
-
 
 
 
